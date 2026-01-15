@@ -21,7 +21,8 @@
         button { flex: 1; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
         .reset-btn { background: #e2e8f0; color: #4a5568; }
-        .swap-btn { width: 48px; padding: 12px; background: white; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer; font-size: 20px; position: relative; top: 32px; margin: 0 10px; flex: none; }
+        .swap-btn { width: 48px; height: 48px; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 20px; position: relative; top: 32px; margin: 0 10px; flex: none; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); display: flex; align-items: center; justify-content: center; }
+        .swap-btn:hover { transform: scale(1.1); box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6); }
         .route-result { background: linear-gradient(135deg, #f6f9fc 0%, #e9f2ff 100%); border-radius: 15px; padding: 25px; margin-top: 20px; }
         .route-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid rgba(102, 126, 234, 0.2); }
         .route-title { font-size: 18px; font-weight: 700; color: #2d3748; }
@@ -40,9 +41,16 @@
         .warning { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #92400E; }
         .tip-box { background: white; padding: 15px; border-radius: 10px; font-size: 13px; color: #718096; margin-top: 15px; }
         @media (max-width: 640px) {
-            .route-info { grid-template-columns: 1fr; }
-            .swap-btn { top: 0; margin: 10px 0; }
-            body > div > div:first-child { flex-direction: column !important; }
+            .container { padding: 20px 15px; }
+            h1 { font-size: 24px; }
+            .subtitle { font-size: 13px; }
+            .route-info { grid-template-columns: 1fr; gap: 10px; }
+            .swap-btn { top: 10px; margin: 10px auto; width: 56px; height: 56px; font-size: 24px; }
+            .station-selector { flex-direction: column; align-items: stretch; }
+            .station-box { width: 100% !important; min-width: 100%; }
+            select { font-size: 13px; }
+            .btn-group { flex-direction: column; }
+            button { padding: 14px; font-size: 15px; }
         }
     </style>
 </head>
@@ -51,8 +59,8 @@
         <h1>🚇 KL Transit Planner</h1>
         <p class="subtitle">Your Ultimate Klang Valley Transit Companion</p>
 
-        <div style="display: flex; align-items: start;">
-            <div style="flex: 1;">
+        <div style="display: flex; align-items: start; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
                 <label for="fromStation">From Station</label>
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
@@ -63,7 +71,7 @@
 
             <button class="swap-btn" onclick="swapStations()">⇅</button>
 
-            <div style="flex: 1;">
+            <div style="flex: 1; min-width: 200px;">
                 <label for="toStation">To Station</label>
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
@@ -97,7 +105,7 @@
             L1: { name: 'MRT Putrajaya Extension', color: '#FFD700', hours: '06:00-00:00' }
         };
 
-        const stations = {
+        const stationsByLine = {
             L5: ['Gombak','Taman Melati','Wangsa Maju','Sri Rampai','Setiawangsa','Jelatek','Dato Keramat','Damai','KLCC','Kampung Baru','Dang Wangi','Masjid Jamek*','Plaza Rakyat','Hang Tuah*','Pudu','Chan Sow Lin*','Miharja','Maluri*','Taman Pertama','Taman Midah','Taman Mutiara','Taman Connaught','Taman Suntex','Sri Raya','Bandar Tun Razak','Salak Selatan','Cheras','Bandar Tun Hussein Onn','Bukit Jalil','Sri Petaling','Awan Besar','Muhibbah','Alam Sutera','Kinrara BK5','Puchong Jaya','IOI Puchong Jaya','Pusat Bandar Puchong','Taman Perindustrian Puchong','Putra Heights','Kelana Jaya','Taman Bahagia','Asia Jaya','Taman Jaya','Universiti','Taman Paramount'],
             L3: ['Ampang','Cahaya','Cempaka','Pandan Indah','Pandan Jaya','Maluri*','Sentul Timur','Sentul','Titiwangsa*','PWTC','Sultan Ismail','Bandaraya','Masjid Jamek*','Hang Tuah*','Pasar Seni*','Bandar Tasik Selatan*','Serdang Raya Selatan','Serdang Raya Utara','Serdang Jaya','UPM','Taman Universiti','Taman Pertanian','Kinrara','Putra Permai','Cyberjaya Utara','Putrajaya Sentral*'],
             L9: ['Kajang','Kajang 2','Stadium Kajang','Sungai Jernih','Reko','Bangi','Batang Benar','UKM','Bandar Tun Hussein Onn','Sri Raya','Cochrane','Maluri*','Chan Sow Lin*','TRX*','Bukit Bintang*','Merdeka','Pasar Seni*','Muzium Negara*','Semantan','Phileo Damansara','Pusat Bandar Damansara','Taman Tun Dr Ismail','Bandar Utama','Mutiara Damansara','Surian','Kota Damansara','Kwasa Sentral','Kwasa Damansara','Sungai Buloh*'],
@@ -124,14 +132,15 @@
             'KLCC': ['L5', 'L12'],
             'Putrajaya Sentral': ['L3', 'L12', 'K11'],
             'Putra': ['K1', 'K2'],
-            'Muzium Negara': ['L9', 'K1', 'K2']
+            'Muzium Negara': ['L9', 'K1', 'K2'],
+            'Pasar Seni': ['L3', 'L9']
         };
 
         let allStations = [];
         let selectedFrom = null, selectedTo = null;
 
         function init() {
-            Object.entries(stations).forEach(([line, stns]) => {
+            Object.entries(stationsByLine).forEach(([line, stns]) => {
                 stns.forEach((name, idx) => {
                     const clean = name.replace('*', '');
                     allStations.push({ 
@@ -225,7 +234,7 @@
             }
         }
 
-        function getOperatingWarning(time) {
+        function getOperatingWarning() {
             const hour = new Date().getHours();
             if (hour < 6 || hour >= 23) {
                 return '⚠️ Warning: Service may not be operating at this time. Check schedules.';
@@ -382,7 +391,12 @@
             result.classList.remove('hidden');
         }
 
-        init();
+        // Initialize when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
