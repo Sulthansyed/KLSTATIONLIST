@@ -3,400 +3,1434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KL Transit Planner</title>
+    <title>Klang Valley Transit Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; min-height: 100vh; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        h1 { color: #2d3748; margin-bottom: 10px; font-size: 28px; }
-        .subtitle { color: #718096; margin-bottom: 30px; font-size: 14px; }
-        .search-box { position: relative; margin-bottom: 10px; }
-        .search-input { width: 100%; padding: 12px 12px 12px 40px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; }
-        .search-input:focus { outline: none; border-color: #667eea; }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a0aec0; }
-        label { display: block; margin-bottom: 8px; color: #4a5568; font-weight: 600; font-size: 14px; }
-        select { width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; margin-bottom: 20px; background: white; cursor: pointer; }
-        select:focus { outline: none; border-color: #667eea; }
-        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        button { flex: 1; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
-        .reset-btn { background: #e2e8f0; color: #4a5568; }
-        .swap-btn { width: 48px; height: 48px; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 20px; position: relative; top: 32px; margin: 0 10px; flex: none; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); display: flex; align-items: center; justify-content: center; }
-        .swap-btn:hover { transform: scale(1.1); box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6); }
-        .route-result { background: linear-gradient(135deg, #f6f9fc 0%, #e9f2ff 100%); border-radius: 15px; padding: 25px; margin-top: 20px; }
-        .route-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid rgba(102, 126, 234, 0.2); }
-        .route-title { font-size: 18px; font-weight: 700; color: #2d3748; }
-        .journey-time { background: #667eea; color: white; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; }
-        .route-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        .info-card { background: white; padding: 12px; border-radius: 10px; text-align: center; }
-        .info-label { font-size: 11px; color: #718096; text-transform: uppercase; margin-bottom: 5px; }
-        .info-value { font-size: 18px; font-weight: 700; color: #2d3748; }
-        .segment { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 4px solid; }
-        .segment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .segment-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .segment-title { font-weight: 600; color: #2d3748; font-size: 16px; }
-        .segment-details { padding-left: 52px; color: #4a5568; font-size: 14px; line-height: 1.8; }
-        .hidden { display: none; }
-        .station-count { font-size: 12px; color: #718096; margin-bottom: 15px; }
-        .warning { background: #FEF3C7; border-left: 4px solid #F59E0B; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #92400E; }
-        .tip-box { background: white; padding: 15px; border-radius: 10px; font-size: 13px; color: #718096; margin-top: 15px; }
-        @media (max-width: 640px) {
-            .container { padding: 20px 15px; }
-            h1 { font-size: 24px; }
-            .subtitle { font-size: 13px; }
-            .route-info { grid-template-columns: 1fr; gap: 10px; }
-            .swap-btn { top: 10px; margin: 10px auto; width: 56px; height: 56px; font-size: 24px; }
-            .station-selector { flex-direction: column; align-items: stretch; }
-            .station-box { width: 100% !important; min-width: 100%; }
-            select { font-size: 13px; }
-            .btn-group { flex-direction: column; }
-            button { padding: 14px; font-size: 15px; }
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --success: #00d9a5;
+            --warning: #ffc93c;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --card-bg: rgba(255,255,255,0.95);
+            
+            /* Line Colors */
+            --mrt-kajang: #7dba00;
+            --mrt-putrajaya: #ffcd00;
+            --lrt-ampang: #e0115f;
+            --lrt-sri-petaling: #e0115f;
+            --lrt-kelana-jaya: #dc241f;
+            --monorail: #5cb85c;
+            --ktm: #003399;
+            --klia-express: #6f2da8;
+            --brt: #00bfff;
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--primary);
+            min-height: 100vh;
+            color: var(--primary);
+        }
+
+        /* Animated Background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            z-index: -1;
+        }
+
+        .bg-pattern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(233, 69, 96, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 217, 165, 0.1) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--highlight), #ff6b6b);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 8px 30px rgba(233, 69, 96, 0.4);
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* Main Card */
+        .planner-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 
+                0 25px 80px rgba(0,0,0,0.4),
+                0 10px 30px rgba(0,0,0,0.2);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Station Selection */
+        .station-selector {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .station-selector {
+                grid-template-columns: 1fr;
+            }
+            .swap-btn {
+                order: -1;
+                justify-self: center;
+                transform: rotate(90deg);
+            }
+        }
+
+        .field-group {
+            position: relative;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .station-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+        }
+
+        .station-select:hover {
+            border-color: var(--highlight);
+        }
+
+        .station-select:focus {
+            outline: none;
+            border-color: var(--highlight);
+            box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
+        }
+
+        .swap-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .swap-btn:hover {
+            background: var(--highlight);
+            border-color: var(--highlight);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        /* Action Buttons */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--highlight), #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            color: var(--gray);
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .results-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .journey-summary {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Route Card */
+        .route-card {
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .route-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 500px) {
+            .route-overview {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Fare Display */
+        .fare-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .fare-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .fare-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .fare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .fare-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fare-card.cashless {
+            background: linear-gradient(135deg, #d4f5e9, #a8edce);
+            border: 2px solid var(--success);
+        }
+
+        .fare-card.cash {
+            background: linear-gradient(135deg, #f5f5f5, #e9ecef);
+            border: 2px solid #dee2e6;
+        }
+
+        .fare-card.cashless::before {
+            content: 'RECOMMENDED';
+            position: absolute;
+            top: 8px;
+            right: -30px;
+            background: var(--success);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 3px 35px;
+            transform: rotate(45deg);
+        }
+
+        .fare-type {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .fare-card.cashless .fare-type {
+            color: #0a7c5a;
+        }
+
+        .fare-card.cash .fare-type {
+            color: var(--gray);
+        }
+
+        .fare-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .fare-card.cashless .fare-amount {
+            color: #0a7c5a;
+        }
+
+        .fare-card.cash .fare-amount {
+            color: var(--primary);
+        }
+
+        .fare-note {
+            font-size: 0.75rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .savings-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        /* Route Segments */
+        .segments-section {
+            margin-top: 25px;
+        }
+
+        .segments-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .segment {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px dashed #e9ecef;
+        }
+
+        .segment:last-child {
+            border-bottom: none;
+        }
+
+        .segment-line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40px;
+        }
+
+        .line-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: white;
+        }
+
+        .line-connector {
+            flex: 1;
+            width: 4px;
+            min-height: 40px;
+        }
+
+        .segment-info {
+            flex: 1;
+        }
+
+        .segment-station {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .segment-details {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .line-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            margin-right: 8px;
+        }
+
+        /* Transfer Badge */
+        .transfer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--warning);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: linear-gradient(135deg, #fff9e6, #fff3cd);
+            border: 1px solid #ffeeba;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .disclaimer-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .disclaimer-text {
+            font-size: 0.8rem;
+            color: #856404;
+            line-height: 1.5;
+        }
+
+        .disclaimer-text strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Tips Box */
+        .tips-box {
+            background: linear-gradient(135deg, #e8f4fd, #d1ecf1);
+            border: 1px solid #bee5eb;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-top: 15px;
+        }
+
+        .tips-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0c5460;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tips-list {
+            list-style: none;
+            font-size: 0.8rem;
+            color: #0c5460;
+        }
+
+        .tips-list li {
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .tips-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Quick Routes */
+        .quick-routes {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .quick-routes-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--gray);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-route-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .quick-chip {
+            padding: 10px 16px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-chip:hover {
+            border-color: var(--highlight);
+            background: rgba(233, 69, 96, 0.05);
+        }
+
+        .quick-chip span {
+            opacity: 0.5;
+            margin: 0 6px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--highlight);
+        }
+
+        /* Line Colors */
+        .line-mrt-kajang { background-color: var(--mrt-kajang); }
+        .line-mrt-putrajaya { background-color: var(--mrt-putrajaya); color: #333; }
+        .line-lrt-ampang { background-color: var(--lrt-ampang); }
+        .line-lrt-sri-petaling { background-color: var(--lrt-sri-petaling); }
+        .line-lrt-kelana-jaya { background-color: var(--lrt-kelana-jaya); }
+        .line-monorail { background-color: var(--monorail); }
+        .line-ktm { background-color: var(--ktm); }
+        .line-klia-express { background-color: var(--klia-express); }
+        .line-brt { background-color: var(--brt); }
+
+        .dot-mrt-kajang { border-color: var(--mrt-kajang); }
+        .dot-mrt-putrajaya { border-color: var(--mrt-putrajaya); }
+        .dot-lrt-ampang { border-color: var(--lrt-ampang); }
+        .dot-lrt-sri-petaling { border-color: var(--lrt-sri-petaling); }
+        .dot-lrt-kelana-jaya { border-color: var(--lrt-kelana-jaya); }
+        .dot-monorail { border-color: var(--monorail); }
+        .dot-ktm { border-color: var(--ktm); }
+        .dot-klia-express { border-color: var(--klia-express); }
+        .dot-brt { border-color: var(--brt); }
+
+        .connector-mrt-kajang { background-color: var(--mrt-kajang); }
+        .connector-mrt-putrajaya { background-color: var(--mrt-putrajaya); }
+        .connector-lrt-ampang { background-color: var(--lrt-ampang); }
+        .connector-lrt-sri-petaling { background-color: var(--lrt-sri-petaling); }
+        .connector-lrt-kelana-jaya { background-color: var(--lrt-kelana-jaya); }
+        .connector-monorail { background-color: var(--monorail); }
+        .connector-ktm { background-color: var(--ktm); }
+        .connector-klia-express { background-color: var(--klia-express); }
+        .connector-brt { background-color: var(--brt); }
     </style>
 </head>
 <body>
+    <div class="bg-pattern"></div>
+    
     <div class="container">
-        <h1>🚇 KL Transit Planner</h1>
-        <p class="subtitle">Your Ultimate Klang Valley Transit Companion</p>
+        <header>
+            <div class="logo">
+                <div class="logo-icon">🚇</div>
+                <h1>KL Transit Planner</h1>
+            </div>
+            <p class="subtitle">Plan your journey across Klang Valley's rail network</p>
+        </header>
 
-        <div style="display: flex; align-items: start; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px;">
-                <label for="fromStation">From Station</label>
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="fromSearch" class="search-input" placeholder="Search station..." oninput="filterStations('from')">
+        <div class="planner-card">
+            <!-- Station Selection -->
+            <div class="station-selector">
+                <div class="field-group">
+                    <label>From Station</label>
+                    <select id="fromStation" class="station-select">
+                        <option value="">Select departure station</option>
+                    </select>
                 </div>
-                <select id="fromStation" size="6" onchange="selectStation('from')"></select>
+
+                <button class="swap-btn" onclick="swapStations()" title="Swap stations">⇄</button>
+
+                <div class="field-group">
+                    <label>To Station</label>
+                    <select id="toStation" class="station-select">
+                        <option value="">Select arrival station</option>
+                    </select>
+                </div>
             </div>
 
-            <button class="swap-btn" onclick="swapStations()">⇅</button>
+            <!-- Action Buttons -->
+            <div class="btn-row">
+                <button class="btn-primary" onclick="planJourney()">
+                    🔍 Plan Journey
+                </button>
+                <button class="btn-secondary" onclick="resetForm()">
+                    Reset
+                </button>
+            </div>
 
-            <div style="flex: 1; min-width: 200px;">
-                <label for="toStation">To Station</label>
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="toSearch" class="search-input" placeholder="Search station..." oninput="filterStations('to')">
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section">
+                <div class="results-header">
+                    <span class="results-title">🎯 Journey Details</span>
+                    <span class="journey-summary" id="journeySummary"></span>
                 </div>
-                <select id="toStation" size="6" onchange="selectStation('to')"></select>
+
+                <div class="route-card">
+                    <!-- Overview Stats -->
+                    <div class="route-overview">
+                        <div class="stat-box">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-value" id="totalTime">--</div>
+                            <div class="stat-label">Duration</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🚏</div>
+                            <div class="stat-value" id="totalStops">--</div>
+                            <div class="stat-label">Stops</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🔄</div>
+                            <div class="stat-value" id="totalTransfers">--</div>
+                            <div class="stat-label">Transfers</div>
+                        </div>
+                    </div>
+
+                    <!-- Fare Display -->
+                    <div class="fare-section">
+                        <div class="fare-header">
+                            <span>💰</span>
+                            <h3>Fare Estimate</h3>
+                        </div>
+                        <div class="fare-grid">
+                            <div class="fare-card cashless">
+                                <div class="fare-type">Cashless Fare</div>
+                                <div class="fare-amount" id="cashlessFare">RM --</div>
+                                <div class="fare-note">Touch 'n Go / MyRapid Card</div>
+                                <div class="savings-badge" id="savingsBadge">Save RM --</div>
+                            </div>
+                            <div class="fare-card cash">
+                                <div class="fare-type">Cash Fare</div>
+                                <div class="fare-amount" id="cashFare">RM --</div>
+                                <div class="fare-note">Token / Ticket</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Route Segments -->
+                    <div class="segments-section">
+                        <div class="segments-title">
+                            <span>📍</span> Route Breakdown
+                        </div>
+                        <div id="routeSegments"></div>
+                    </div>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="disclaimer">
+                    <div class="disclaimer-icon">⚠️</div>
+                    <div class="disclaimer-text">
+                        <strong>Fare Disclaimer</strong>
+                        Fares shown are estimates based on standard pricing and may vary slightly. 
+                        Actual fares are determined by the rail operator (Prasarana/KTMB) and are subject to change. 
+                        Please verify at the station or via the official MyRapid app for the most accurate pricing.
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="tips-box">
+                    <div class="tips-title">💡 Travel Tips</div>
+                    <ul class="tips-list">
+                        <li>Cashless fares (Touch 'n Go/MyRapid) are 10-20% cheaper than cash tokens</li>
+                        <li>Peak hours: Mon-Fri 7-9 AM & 5-7 PM — expect higher crowds</li>
+                        <li>First train: ~6:00 AM | Last train: ~11:30 PM (varies by line)</li>
+                        <li>Download MyRapid PULSE app for real-time train arrivals</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quick Routes -->
+            <div class="quick-routes">
+                <div class="quick-routes-title">⚡ Popular Routes</div>
+                <div class="quick-route-chips">
+                    <button class="quick-chip" onclick="quickRoute('kl-sentral', 'klcc')">
+                        KL Sentral <span>→</span> KLCC
+                    </button>
+                    <button class="quick-chip" onclick="quickRoute('kl-sentral', 'klia')">
+                        KL Sentral <span>→</span> KLIA
+                    </button>
+                    <button class="quick-chip" onclick="quickRoute('kajang', 'bukit-bintang')">
+                        Kajang <span>→</span> Bukit Bintang
+                    </button>
+                    <button class="quick-chip" onclick="quickRoute('putrajaya-sentral', 'klcc')">
+                        Putrajaya <span>→</span> KLCC
+                    </button>
+                    <button class="quick-chip" onclick="quickRoute('subang-jaya', 'kl-sentral')">
+                        Subang Jaya <span>→</span> KL Sentral
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="station-count" id="stationCount"></div>
-
-        <div class="btn-group">
-            <button onclick="planJourney()">Plan My Journey</button>
-            <button class="reset-btn" onclick="resetForm()">Reset</button>
-        </div>
-
-        <div id="result" class="hidden"></div>
+        <footer>
+            <p>Built for Klang Valley commuters • Data based on RapidKL & KTMB fares</p>
+            <p style="margin-top: 8px;">
+                <a href="https://www.myrapid.com.my" target="_blank">MyRapid Official</a> • 
+                <a href="https://mrt.com.my" target="_blank">MRT Corp</a>
+            </p>
+        </footer>
     </div>
 
     <script>
-        const lines = {
-            L5: { name: 'LRT Kelana Jaya', color: '#E21F26', hours: '06:00-23:30' },
-            L3: { name: 'LRT Ampang/Sri Petaling', color: '#FF8C00', hours: '06:00-23:30' },
-            L9: { name: 'MRT Kajang', color: '#008B8B', hours: '06:00-00:00' },
-            L12: { name: 'MRT Putrajaya', color: '#FFD700', hours: '06:00-00:00' },
-            L8: { name: 'KL Monorail', color: '#32CD32', hours: '06:00-23:00' },
-            K1: { name: 'KTM Komuter Port Klang', color: '#1E90FF', hours: '05:30-23:30' },
-            K2: { name: 'KTM Komuter Tanjung Malim', color: '#8B0000', hours: '05:30-23:30' },
-            K11: { name: 'KLIA Transit', color: '#00CED1', hours: '05:00-01:00' },
-            L10: { name: 'BRT Sunway', color: '#DC143C', hours: '06:00-23:00' },
-            L1: { name: 'MRT Putrajaya Extension', color: '#FFD700', hours: '06:00-00:00' }
+        // =============================================
+        // KLANG VALLEY TRANSIT DATA
+        // =============================================
+        
+        const transitLines = {
+            'mrt-kajang': {
+                name: 'MRT Kajang Line',
+                code: 'MRT-KJ',
+                color: '#7dba00',
+                stations: [
+                    'Kwasa Damansara', 'Kampung Selamat', 'Sungai Buloh', 'Damansara Damai',
+                    'Sri Damansara Barat', 'Sri Damansara Sentral', 'Sri Damansara Timur',
+                    'Metro Prima', 'Kepong Baru', 'Jinjang', 'Sri Delima', 'Kampung Batu',
+                    'Kentonmen', 'Sentul Barat', 'Titiwangsa', 'PWTC', 'Sultan Ismail',
+                    'Bukit Bintang', 'Tun Razak Exchange', 'Cochrane', 'Maluri',
+                    'Taman Pertama', 'Taman Midah', 'Taman Mutiara', 'Taman Connaught',
+                    'Taman Suntex', 'Sri Raya', 'Bandar Tun Hussein Onn', 'Batu 11 Cheras',
+                    'Bukit Dukung', 'Sungai Jernih', 'Stadium Kajang', 'Kajang'
+                ]
+            },
+            'mrt-putrajaya': {
+                name: 'MRT Putrajaya Line',
+                code: 'MRT-PY',
+                color: '#ffcd00',
+                stations: [
+                    'Kwasa Damansara', 'Kampung Selamat', 'Sungai Buloh', 'Damansara Damai',
+                    'Sri Damansara Barat', 'Sri Damansara Sentral', 'Sri Damansara Timur',
+                    'Metro Prima', 'Kepong Baru', 'Jinjang', 'Kentonmen', 'Kampung Batu',
+                    'Sri Delima', 'Chan Sow Lin', 'Titiwangsa', 'Hospital Kuala Lumpur',
+                    'Raja Uda', 'Ampang Park', 'Persiaran KLCC', 'Conlay', 'Tun Razak Exchange',
+                    'Chan Sow Lin', 'Kuchai', 'Taman Naga Emas', 'Sungai Besi', 'Serdang Raya Utara',
+                    'Serdang Raya Selatan', 'Serdang Jaya', 'UPM', 'Taman Equine', 'Putra Permai',
+                    'Cyberjaya Utara', 'Cyberjaya City Centre', 'Putrajaya Sentral'
+                ]
+            },
+            'lrt-kelana-jaya': {
+                name: 'LRT Kelana Jaya Line',
+                code: 'LRT-KJ',
+                color: '#dc241f',
+                stations: [
+                    'Putra Heights', 'Subang Alam', 'Awan Besar', 'Muhibbah', 'Alam Sutera',
+                    'Kinrara BK5', 'IOI Puchong Jaya', 'Pusat Bandar Puchong', 'Taman Perindustrian Puchong',
+                    'Bandar Puteri', 'Puchong Perdana', 'Puchong Prima', 'SS18', 'SS15',
+                    'Subang Jaya', 'USJ7', 'Taipan', 'Wawasan', 'USJ21', 'Alam Megah',
+                    'Subang Alam', 'Glenmarie', 'Ara Damansara', 'Lembah Subang', 'Kelana Jaya',
+                    'Taman Bahagia', 'Taman Paramount', 'Asia Jaya', 'Taman Jaya', 'Universiti',
+                    'Kerinchi', 'Abdullah Hukum', 'Bangsar', 'KL Sentral', 'Pasar Seni',
+                    'Masjid Jamek', 'Dang Wangi', 'Kampung Baru', 'KLCC', 'Ampang Park',
+                    'Damai', 'Dato Keramat', 'Setiawangsa', 'Jelatek', 'Wangsa Maju', 'Gombak'
+                ]
+            },
+            'lrt-ampang': {
+                name: 'LRT Ampang Line',
+                code: 'LRT-AG',
+                color: '#e0115f',
+                stations: [
+                    'Sentul Timur', 'Sentul', 'Titiwangsa', 'PWTC', 'Sultan Ismail',
+                    'Bandaraya', 'Masjid Jamek', 'Plaza Rakyat', 'Hang Tuah', 'Pudu',
+                    'Chan Sow Lin', 'Miharja', 'Cempaka', 'Pandan Indah', 'Pandan Jaya',
+                    'Maluri', 'Cahaya', 'Ampang'
+                ]
+            },
+            'lrt-sri-petaling': {
+                name: 'LRT Sri Petaling Line',
+                code: 'LRT-SP',
+                color: '#e0115f',
+                stations: [
+                    'Sentul Timur', 'Sentul', 'Titiwangsa', 'PWTC', 'Sultan Ismail',
+                    'Bandaraya', 'Masjid Jamek', 'Plaza Rakyat', 'Hang Tuah', 'Pudu',
+                    'Chan Sow Lin', 'Cheras', 'Salak Selatan', 'Bandar Tun Razak',
+                    'Bandar Tasik Selatan', 'Sungai Besi', 'Bukit Jalil', 'Sri Petaling',
+                    'Awan Besar', 'Muhibbah', 'Alam Sutera', 'Kinrara BK5', 'IOI Puchong Jaya',
+                    'Pusat Bandar Puchong'
+                ]
+            },
+            'monorail': {
+                name: 'KL Monorail',
+                code: 'MR',
+                color: '#5cb85c',
+                stations: [
+                    'KL Sentral', 'Tun Sambanthan', 'Maharajalela', 'Hang Tuah',
+                    'Imbi', 'Bukit Bintang', 'Raja Chulan', 'Bukit Nanas',
+                    'Medan Tuanku', 'Chow Kit', 'Titiwangsa'
+                ]
+            },
+            'ktm-port-klang': {
+                name: 'KTM Port Klang Line',
+                code: 'KTM-PK',
+                color: '#003399',
+                stations: [
+                    'Tanjung Malim', 'Kuala Kubu Bharu', 'Rasa', 'Batang Kali', 'Serendah',
+                    'Rawang', 'Kuang', 'Sungai Buloh', 'Kepong', 'Kepong Sentral',
+                    'Segambut', 'Putra', 'Bank Negara', 'Kuala Lumpur', 'KL Sentral',
+                    'Angkasapuri', 'Pantai Dalam', 'Petaling', 'Jalan Templer', 'Kampung Dato Harun',
+                    'Seri Setia', 'Setia Jaya', 'Subang Jaya', 'Batu Tiga', 'Shah Alam',
+                    'Padang Jawa', 'Bukit Badak', 'Klang', 'Teluk Pulai', 'Teluk Gadong',
+                    'Kampung Raja Uda', 'Jalan Kastam', 'Port Klang'
+                ]
+            },
+            'klia-express': {
+                name: 'KLIA Express/Transit',
+                code: 'ERL',
+                color: '#6f2da8',
+                stations: [
+                    'KL Sentral', 'Bandar Tasik Selatan', 'Putrajaya & Cyberjaya', 
+                    'KLIA Terminal 1', 'KLIA Terminal 2'
+                ]
+            }
         };
 
-        const stationsByLine = {
-            L5: ['Gombak','Taman Melati','Wangsa Maju','Sri Rampai','Setiawangsa','Jelatek','Dato Keramat','Damai','KLCC','Kampung Baru','Dang Wangi','Masjid Jamek*','Plaza Rakyat','Hang Tuah*','Pudu','Chan Sow Lin*','Miharja','Maluri*','Taman Pertama','Taman Midah','Taman Mutiara','Taman Connaught','Taman Suntex','Sri Raya','Bandar Tun Razak','Salak Selatan','Cheras','Bandar Tun Hussein Onn','Bukit Jalil','Sri Petaling','Awan Besar','Muhibbah','Alam Sutera','Kinrara BK5','Puchong Jaya','IOI Puchong Jaya','Pusat Bandar Puchong','Taman Perindustrian Puchong','Putra Heights','Kelana Jaya','Taman Bahagia','Asia Jaya','Taman Jaya','Universiti','Taman Paramount'],
-            L3: ['Ampang','Cahaya','Cempaka','Pandan Indah','Pandan Jaya','Maluri*','Sentul Timur','Sentul','Titiwangsa*','PWTC','Sultan Ismail','Bandaraya','Masjid Jamek*','Hang Tuah*','Pasar Seni*','Bandar Tasik Selatan*','Serdang Raya Selatan','Serdang Raya Utara','Serdang Jaya','UPM','Taman Universiti','Taman Pertanian','Kinrara','Putra Permai','Cyberjaya Utara','Putrajaya Sentral*'],
-            L9: ['Kajang','Kajang 2','Stadium Kajang','Sungai Jernih','Reko','Bangi','Batang Benar','UKM','Bandar Tun Hussein Onn','Sri Raya','Cochrane','Maluri*','Chan Sow Lin*','TRX*','Bukit Bintang*','Merdeka','Pasar Seni*','Muzium Negara*','Semantan','Phileo Damansara','Pusat Bandar Damansara','Taman Tun Dr Ismail','Bandar Utama','Mutiara Damansara','Surian','Kota Damansara','Kwasa Sentral','Kwasa Damansara','Sungai Buloh*'],
-            L12: ['Kwasa Damansara','Kampung Selamat','Sungai Buloh*','Damansara Damai','Sri Damansara Barat','Sri Damansara Sentral','Sri Damansara Timur','Kepong Baru','Kepong Sentral','Jinjang','Metro Prima','Kepong','Segambut','Sentul Barat','Jalan Ipoh','Sentul Timur','Hospital Kuala Lumpur','Titiwangsa*','Ampang Park','KLCC*','Conlay','TRX*','Chan Sow Lin*','Bandar Malaysia Selatan','Kuchai','Taman Naga Emas','Sungai Besi','Serdang Raya Utara','Serdang Raya Selatan','Bandar Tasik Selatan*','UPM','Equine Park','16 Sierra','Cyberjaya City Centre','Cyberjaya Utara','Putrajaya Sentral*'],
-            L8: ['KL Sentral*','Tun Sambanthan','Maharajalela','Hang Tuah*','Imbi','Bukit Bintang*','Raja Chulan','Bukit Nanas','Medan Tuanku','Chow Kit','Titiwangsa*'],
-            K1: ['Batu Caves','Taman Wahyu','Kampung Batu','Sentul','Putra*','Bank Negara','KL Sentral*','Kuala Lumpur','Mid Valley','Seputeh','Salak Selatan','Bandar Tasik Selatan*','Serdang','UKM','Bangi','Batang Benar','Nilai','Labu','Tiroi','Seremban','Senawang','Sungai Gadut','Rembau','Tampin','Batang Melaka','Pulau Sebang'],
-            K2: ['Tanjung Malim','Kuala Kubu Bharu','Rasa','Batang Kali','Serendah','Rawang','Kuang','Sungai Buloh*','Kepong','Segambut','Sentul','Putra*','Bank Negara','KL Sentral*','Kuala Lumpur'],
-            K11: ['Skypark Terminal','KLIA','KLIA2','Salak Tinggi','Putrajaya & Cyberjaya*','Bandar Tasik Selatan*','KL Sentral*'],
-            L10: ['Terminal BRT Sunway','SunMed','South Quay - USJ 1','Sunway Lagoon','Mentari','Sunway','USJ 7','Taipan','Wawasan','USJ 21'],
-            L1: ['Teluk Pulai','Bukit Raja','Taman Bahagia','Bandar Botanic','Klang Jaya','Johan Setia','Bandar Alam Shah','Shah Alam','UiTM Shah Alam','Kampung Raja Uda','Batu Tiga','Padang Jawa','Subang Jaya','Ara Damansara','Glenmarie 2','Glenmarie','Setia Jaya','Subang','Lembah Subang','SS 15','SS 18','Kelana Jaya']
+        // =============================================
+        // FARE CALCULATION MODULE
+        // =============================================
+
+        const fareCalculator = {
+            // Base fare structure (in RM) - based on RapidKL fare matrix
+            // Zone-based pricing similar to official structure
+            
+            rapidKL: {
+                // Cashless fares (Touch n Go / MyRapid)
+                cashless: {
+                    1: 1.10,   // 1-2 stations
+                    2: 1.30,   // 3-4 stations
+                    3: 1.50,   // 5-6 stations
+                    4: 1.70,   // 7-8 stations
+                    5: 1.90,   // 9-10 stations
+                    6: 2.10,   // 11-12 stations
+                    7: 2.30,   // 13-14 stations
+                    8: 2.50,   // 15-16 stations
+                    9: 2.70,   // 17-18 stations
+                    10: 2.90,  // 19-20 stations
+                    11: 3.10,  // 21-22 stations
+                    12: 3.30,  // 23-24 stations
+                    13: 3.50,  // 25-26 stations
+                    14: 3.70,  // 27-28 stations
+                    15: 3.90,  // 29-30 stations
+                    16: 4.10,  // 31-32 stations
+                    17: 4.30,  // 33-34 stations
+                    18: 4.50,  // 35-36 stations
+                    19: 4.70,  // 37-38 stations
+                    20: 4.90,  // 39-40 stations
+                    max: 6.40  // Maximum fare
+                },
+                // Cash fares (Token)
+                cash: {
+                    1: 1.30,
+                    2: 1.60,
+                    3: 1.90,
+                    4: 2.10,
+                    5: 2.40,
+                    6: 2.60,
+                    7: 2.90,
+                    8: 3.10,
+                    9: 3.40,
+                    10: 3.60,
+                    11: 3.90,
+                    12: 4.10,
+                    13: 4.40,
+                    14: 4.60,
+                    15: 4.90,
+                    16: 5.10,
+                    17: 5.40,
+                    18: 5.60,
+                    19: 5.90,
+                    20: 6.10,
+                    max: 7.70
+                }
+            },
+
+            // KTM specific fares (zone-based)
+            ktm: {
+                cashless: {
+                    1: 1.00, 2: 1.30, 3: 1.60, 4: 2.10, 5: 2.50,
+                    6: 3.00, 7: 3.60, 8: 4.30, 9: 5.10, 10: 6.10,
+                    max: 12.80
+                },
+                cash: {
+                    1: 1.20, 2: 1.60, 3: 2.00, 4: 2.60, 5: 3.10,
+                    6: 3.70, 7: 4.50, 8: 5.40, 9: 6.40, 10: 7.60,
+                    max: 16.00
+                }
+            },
+
+            // KLIA Express specific fares
+            kliaExpress: {
+                'KL Sentral-KLIA Terminal 1': { cashless: 55.00, cash: 55.00 },
+                'KL Sentral-KLIA Terminal 2': { cashless: 55.00, cash: 55.00 },
+                'KL Sentral-Putrajaya & Cyberjaya': { cashless: 14.00, cash: 14.00 },
+                'Bandar Tasik Selatan-KLIA Terminal 1': { cashless: 49.50, cash: 49.50 },
+                'Bandar Tasik Selatan-KLIA Terminal 2': { cashless: 49.50, cash: 49.50 }
+            },
+
+            // Calculate zone based on station count
+            getZone: function(stationCount) {
+                return Math.ceil(stationCount / 2);
+            },
+
+            // Main fare calculation function
+            calculate: function(fromStation, toStation, line, stationCount, transfers = 0) {
+                let cashless, cash;
+
+                // Special handling for KLIA Express
+                if (line === 'klia-express') {
+                    const routeKey = `${fromStation}-${toStation}`;
+                    const reverseKey = `${toStation}-${fromStation}`;
+                    
+                    if (this.kliaExpress[routeKey]) {
+                        return this.kliaExpress[routeKey];
+                    } else if (this.kliaExpress[reverseKey]) {
+                        return this.kliaExpress[reverseKey];
+                    }
+                    // Default KLIA pricing for unknown routes
+                    return { cashless: 55.00, cash: 55.00 };
+                }
+
+                // KTM lines
+                if (line.startsWith('ktm')) {
+                    const zone = Math.min(this.getZone(stationCount), 10);
+                    cashless = this.ktm.cashless[zone] || this.ktm.cashless.max;
+                    cash = this.ktm.cash[zone] || this.ktm.cash.max;
+                }
+                // RapidKL lines (MRT, LRT, Monorail, BRT)
+                else {
+                    const zone = Math.min(this.getZone(stationCount), 20);
+                    cashless = this.rapidKL.cashless[zone] || this.rapidKL.cashless.max;
+                    cash = this.rapidKL.cash[zone] || this.rapidKL.cash.max;
+                }
+
+                // Add transfer cost (within integrated network, no extra charge)
+                // But for transfers between different operators (e.g., RapidKL to KTM), add base fare
+                if (transfers > 0) {
+                    // Simplified: integrated network has no transfer penalty for same operator
+                    // Cross-operator transfers would add minimum fare of each system
+                }
+
+                return {
+                    cashless: Math.round(cashless * 100) / 100,
+                    cash: Math.round(cash * 100) / 100
+                };
+            }
         };
 
+        // =============================================
+        // ROUTING ENGINE
+        // =============================================
+
+        // Interchange stations (stations where lines connect)
         const interchanges = {
-            'Masjid Jamek': ['L5', 'L3'],
-            'Hang Tuah': ['L5', 'L3', 'L8'],
-            'Maluri': ['L5', 'L3', 'L9'],
-            'Chan Sow Lin': ['L5', 'L9', 'L12'],
-            'Titiwangsa': ['L3', 'L8', 'L12'],
-            'KL Sentral': ['L8', 'K1', 'K2', 'K11'],
-            'Bandar Tasik Selatan': ['L3', 'L12', 'K1', 'K11'],
-            'Sungai Buloh': ['L9', 'L12', 'K2'],
-            'TRX': ['L9', 'L12'],
-            'Bukit Bintang': ['L9', 'L8'],
-            'KLCC': ['L5', 'L12'],
-            'Putrajaya Sentral': ['L3', 'L12', 'K11'],
-            'Putra': ['K1', 'K2'],
-            'Muzium Negara': ['L9', 'K1', 'K2'],
-            'Pasar Seni': ['L3', 'L9']
+            'KL Sentral': ['lrt-kelana-jaya', 'ktm-port-klang', 'klia-express', 'monorail'],
+            'Masjid Jamek': ['lrt-kelana-jaya', 'lrt-ampang', 'lrt-sri-petaling'],
+            'Titiwangsa': ['lrt-ampang', 'lrt-sri-petaling', 'monorail', 'mrt-kajang'],
+            'Hang Tuah': ['lrt-ampang', 'lrt-sri-petaling', 'monorail'],
+            'Chan Sow Lin': ['lrt-ampang', 'lrt-sri-petaling', 'mrt-putrajaya'],
+            'Bukit Bintang': ['monorail', 'mrt-kajang'],
+            'KLCC': ['lrt-kelana-jaya'],
+            'Ampang Park': ['lrt-kelana-jaya', 'mrt-putrajaya'],
+            'Tun Razak Exchange': ['mrt-kajang', 'mrt-putrajaya'],
+            'Sungai Buloh': ['mrt-kajang', 'mrt-putrajaya', 'ktm-port-klang'],
+            'Bandar Tasik Selatan': ['lrt-sri-petaling', 'ktm-port-klang', 'klia-express'],
+            'Subang Jaya': ['lrt-kelana-jaya', 'ktm-port-klang'],
+            'Sultan Ismail': ['lrt-ampang', 'lrt-sri-petaling', 'mrt-kajang'],
+            'PWTC': ['lrt-ampang', 'lrt-sri-petaling', 'mrt-kajang'],
+            'Putra Heights': ['lrt-kelana-jaya', 'lrt-sri-petaling'],
+            'Putrajaya Sentral': ['mrt-putrajaya'],
+            'Kwasa Damansara': ['mrt-kajang', 'mrt-putrajaya']
         };
 
-        let allStations = [];
-        let selectedFrom = null, selectedTo = null;
-
-        function init() {
-            Object.entries(stationsByLine).forEach(([line, stns]) => {
-                stns.forEach((name, idx) => {
-                    const clean = name.replace('*', '');
-                    allStations.push({ 
-                        id: `${line}-${idx}`, 
-                        name: clean, 
-                        line: line, 
-                        seq: idx + 1,
-                        interchange: name.includes('*')
+        // Build station database with line info
+        let stationDatabase = {};
+        
+        function initializeStations() {
+            stationDatabase = {};
+            
+            for (const [lineId, lineData] of Object.entries(transitLines)) {
+                lineData.stations.forEach((station, index) => {
+                    const stationKey = station.toLowerCase().replace(/\s+/g, '-');
+                    
+                    if (!stationDatabase[stationKey]) {
+                        stationDatabase[stationKey] = {
+                            name: station,
+                            lines: []
+                        };
+                    }
+                    
+                    stationDatabase[stationKey].lines.push({
+                        lineId: lineId,
+                        lineName: lineData.name,
+                        lineCode: lineData.code,
+                        lineColor: lineData.color,
+                        index: index
                     });
                 });
-            });
-            populateStations('from', allStations);
-            populateStations('to', allStations);
-            updateStationCount();
-        }
-
-        function populateStations(field, stns) {
-            const select = document.getElementById(field + 'Station');
-            const grouped = {};
-            stns.forEach(s => {
-                if (!grouped[s.line]) grouped[s.line] = [];
-                grouped[s.line].push(s);
-            });
-            
-            let html = '';
-            Object.entries(grouped).forEach(([lineId, lineStns]) => {
-                const line = lines[lineId];
-                html += `<optgroup label="${line.name}">`;
-                lineStns.sort((a, b) => a.name.localeCompare(b.name)).forEach(s => {
-                    html += `<option value="${s.id}">${s.name}${s.interchange ? ' 🔄' : ''}</option>`;
-                });
-                html += '</optgroup>';
-            });
-            select.innerHTML = html;
-        }
-
-        function filterStations(field) {
-            const term = document.getElementById(field + 'Search').value.toLowerCase();
-            const filtered = term ? allStations.filter(s => s.name.toLowerCase().includes(term)) : allStations;
-            populateStations(field, filtered);
-        }
-
-        function selectStation(field) {
-            const select = document.getElementById(field + 'Station');
-            const station = allStations.find(s => s.id === select.value);
-            if (station) {
-                document.getElementById(field + 'Search').value = station.name;
-                if (field === 'from') selectedFrom = select.value;
-                else selectedTo = select.value;
             }
+            
+            // Populate dropdowns
+            populateStationDropdowns();
         }
+
+        function populateStationDropdowns() {
+            const fromSelect = document.getElementById('fromStation');
+            const toSelect = document.getElementById('toStation');
+            
+            // Get unique stations sorted alphabetically
+            const sortedStations = Object.entries(stationDatabase)
+                .sort((a, b) => a[1].name.localeCompare(b[1].name));
+            
+            // Create optgroups by first letter
+            let currentLetter = '';
+            let optgroup = null;
+            
+            sortedStations.forEach(([key, data]) => {
+                const firstLetter = data.name[0].toUpperCase();
+                
+                const option1 = document.createElement('option');
+                option1.value = key;
+                option1.textContent = data.name;
+                option1.dataset.lines = data.lines.map(l => l.lineCode).join(', ');
+                
+                const option2 = option1.cloneNode(true);
+                
+                fromSelect.appendChild(option1);
+                toSelect.appendChild(option2);
+            });
+        }
+
+        // Find route between two stations
+        function findRoute(fromKey, toKey) {
+            const fromStation = stationDatabase[fromKey];
+            const toStation = stationDatabase[toKey];
+            
+            if (!fromStation || !toStation) {
+                return null;
+            }
+
+            // Check if stations share a line (direct route)
+            for (const fromLine of fromStation.lines) {
+                for (const toLine of toStation.lines) {
+                    if (fromLine.lineId === toLine.lineId) {
+                        const stationCount = Math.abs(toLine.index - fromLine.index);
+                        const duration = stationCount * 3; // ~3 min per station
+                        
+                        return {
+                            direct: true,
+                            segments: [{
+                                from: fromStation.name,
+                                to: toStation.name,
+                                line: fromLine,
+                                stations: stationCount,
+                                duration: duration
+                            }],
+                            totalStations: stationCount,
+                            totalDuration: duration,
+                            transfers: 0,
+                            fare: fareCalculator.calculate(
+                                fromStation.name, 
+                                toStation.name, 
+                                fromLine.lineId, 
+                                stationCount
+                            )
+                        };
+                    }
+                }
+            }
+
+            // Need to find transfer route
+            // Simple implementation: find common interchange
+            let bestRoute = null;
+            let shortestDuration = Infinity;
+
+            for (const [interchangeName, interchangeLines] of Object.entries(interchanges)) {
+                const interchangeKey = interchangeName.toLowerCase().replace(/\s+/g, '-');
+                const interchangeStation = stationDatabase[interchangeKey];
+                
+                if (!interchangeStation) continue;
+
+                // Check if we can get from origin to interchange
+                for (const fromLine of fromStation.lines) {
+                    const interchangeOnFromLine = interchangeStation.lines.find(l => l.lineId === fromLine.lineId);
+                    
+                    if (interchangeOnFromLine) {
+                        // Check if we can get from interchange to destination
+                        for (const toLine of toStation.lines) {
+                            const interchangeOnToLine = interchangeStation.lines.find(l => l.lineId === toLine.lineId);
+                            
+                            if (interchangeOnToLine && fromLine.lineId !== toLine.lineId) {
+                                const leg1Stations = Math.abs(interchangeOnFromLine.index - fromLine.index);
+                                const leg2Stations = Math.abs(toLine.index - interchangeOnToLine.index);
+                                const totalStations = leg1Stations + leg2Stations;
+                                const totalDuration = (totalStations * 3) + 5; // +5 min for transfer
+                                
+                                if (totalDuration < shortestDuration) {
+                                    shortestDuration = totalDuration;
+                                    
+                                    // Calculate combined fare
+                                    const fare1 = fareCalculator.calculate(
+                                        fromStation.name, interchangeName, fromLine.lineId, leg1Stations
+                                    );
+                                    const fare2 = fareCalculator.calculate(
+                                        interchangeName, toStation.name, toLine.lineId, leg2Stations
+                                    );
+                                    
+                                    // For integrated network, use the longer journey fare (not sum)
+                                    const combinedFare = fareCalculator.calculate(
+                                        fromStation.name, toStation.name, fromLine.lineId, totalStations, 1
+                                    );
+
+                                    bestRoute = {
+                                        direct: false,
+                                        segments: [
+                                            {
+                                                from: fromStation.name,
+                                                to: interchangeName,
+                                                line: fromLine,
+                                                stations: leg1Stations,
+                                                duration: leg1Stations * 3
+                                            },
+                                            {
+                                                from: interchangeName,
+                                                to: toStation.name,
+                                                line: toLine,
+                                                stations: leg2Stations,
+                                                duration: leg2Stations * 3
+                                            }
+                                        ],
+                                        interchange: interchangeName,
+                                        totalStations: totalStations,
+                                        totalDuration: totalDuration,
+                                        transfers: 1,
+                                        fare: combinedFare
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return bestRoute;
+        }
+
+        // =============================================
+        // UI FUNCTIONS
+        // =============================================
 
         function swapStations() {
-            [selectedFrom, selectedTo] = [selectedTo, selectedFrom];
-            const from = allStations.find(s => s.id === selectedFrom);
-            const to = allStations.find(s => s.id === selectedTo);
-            document.getElementById('fromSearch').value = from ? from.name : '';
-            document.getElementById('toSearch').value = to ? to.name : '';
-            document.getElementById('fromStation').value = selectedFrom || '';
-            document.getElementById('toStation').value = selectedTo || '';
+            const fromSelect = document.getElementById('fromStation');
+            const toSelect = document.getElementById('toStation');
+            
+            const temp = fromSelect.value;
+            fromSelect.value = toSelect.value;
+            toSelect.value = temp;
         }
 
         function resetForm() {
-            ['fromSearch', 'toSearch'].forEach(id => document.getElementById(id).value = '');
-            document.getElementById('result').classList.add('hidden');
-            selectedFrom = selectedTo = null;
-            populateStations('from', allStations);
-            populateStations('to', allStations);
             document.getElementById('fromStation').value = '';
             document.getElementById('toStation').value = '';
+            document.getElementById('resultsSection').classList.remove('active');
         }
 
-        function updateStationCount() {
-            document.getElementById('stationCount').textContent = 
-                `${allStations.length} stations across ${Object.keys(lines).length} lines`;
-        }
-
-        function calculateFare(stops, lineType) {
-            if (lineType === 'LRT') {
-                if (stops <= 5) return 1.10;
-                if (stops <= 10) return 2.30;
-                if (stops <= 15) return 3.40;
-                return 4.70;
-            } else if (lineType === 'MRT') {
-                if (stops <= 5) return 1.20;
-                if (stops <= 10) return 2.40;
-                if (stops <= 15) return 3.60;
-                return 5.20;
-            } else {
-                return 2.50 + (stops * 0.20);
-            }
-        }
-
-        function getOperatingWarning() {
-            const hour = new Date().getHours();
-            if (hour < 6 || hour >= 23) {
-                return '⚠️ Warning: Service may not be operating at this time. Check schedules.';
-            }
-            return null;
+        function quickRoute(from, to) {
+            document.getElementById('fromStation').value = from;
+            document.getElementById('toStation').value = to;
+            planJourney();
         }
 
         function planJourney() {
-            const fromId = selectedFrom || document.getElementById('fromStation').value;
-            const toId = selectedTo || document.getElementById('toStation').value;
-            
-            if (!fromId || !toId) return alert('Please select both stations');
-            if (fromId === toId) return alert('Stations cannot be the same');
-            
-            const from = allStations.find(s => s.id === fromId);
-            const to = allStations.find(s => s.id === toId);
-            
-            displayRoute(calculateRoute(from, to));
-        }
+            const fromKey = document.getElementById('fromStation').value;
+            const toKey = document.getElementById('toStation').value;
 
-        function calculateRoute(from, to) {
-            if (from.line === to.line) {
-                const stops = Math.abs(to.seq - from.seq);
-                const duration = stops * 2.5 + 5;
-                const lineType = from.line.startsWith('L') ? (from.line.includes('9') || from.line.includes('12') ? 'MRT' : 'LRT') : 'KTM';
-                
-                return {
-                    from: from.name,
-                    to: to.name,
-                    duration: Math.round(duration),
-                    fare: calculateFare(stops, lineType),
-                    transfers: 0,
-                    segments: [{
-                        type: 'train',
-                        line: lines[from.line].name,
-                        color: lines[from.line].color,
-                        from: from.name,
-                        to: to.name,
-                        stops: stops,
-                        duration: Math.round(duration),
-                        hours: lines[from.line].hours
-                    }]
-                };
-            } else {
-                const interchange = findInterchange(from.name, to.name, from.line, to.line);
-                const duration = 50;
-                
-                return {
-                    from: from.name,
-                    to: to.name,
-                    duration: duration,
-                    fare: 5.50,
-                    transfers: 1,
-                    segments: [
-                        {
-                            type: 'train',
-                            line: lines[from.line].name,
-                            color: lines[from.line].color,
-                            from: from.name,
-                            to: interchange,
-                            stops: 8,
-                            duration: 20,
-                            hours: lines[from.line].hours
-                        },
-                        {
-                            type: 'transfer',
-                            station: interchange,
-                            duration: 7
-                        },
-                        {
-                            type: 'train',
-                            line: lines[to.line].name,
-                            color: lines[to.line].color,
-                            from: interchange,
-                            to: to.name,
-                            stops: 8,
-                            duration: 23,
-                            hours: lines[to.line].hours
-                        }
-                    ]
-                };
+            if (!fromKey || !toKey) {
+                alert('Please select both departure and arrival stations');
+                return;
             }
-        }
 
-        function findInterchange(from, to, fromLine, toLine) {
-            for (const [station, linesList] of Object.entries(interchanges)) {
-                if (linesList.includes(fromLine) && linesList.includes(toLine)) {
-                    return station;
-                }
+            if (fromKey === toKey) {
+                alert('Please select different stations');
+                return;
             }
-            return 'KL Sentral';
+
+            const route = findRoute(fromKey, toKey);
+
+            if (!route) {
+                alert('Sorry, could not find a route between these stations. They may not be connected yet.');
+                return;
+            }
+
+            displayResults(route, fromKey, toKey);
         }
 
-        function displayRoute(route) {
-            const result = document.getElementById('result');
-            const warning = getOperatingWarning();
-            const warningHTML = warning ? `<div class="warning">${warning}</div>` : '';
+        function displayResults(route, fromKey, toKey) {
+            const resultsSection = document.getElementById('resultsSection');
             
-            const segmentsHTML = route.segments.map(seg => {
-                if (seg.type === 'train') {
-                    return `
-                        <div class="segment" style="border-left-color: ${seg.color}">
-                            <div class="segment-header">
-                                <div class="segment-icon" style="background: ${seg.color}20; color: ${seg.color}">🚇</div>
-                                <div class="segment-title">${seg.line}</div>
-                            </div>
+            // Update summary
+            document.getElementById('journeySummary').textContent = 
+                `${stationDatabase[fromKey].name} → ${stationDatabase[toKey].name}`;
+            
+            // Update stats
+            document.getElementById('totalTime').textContent = `${route.totalDuration} min`;
+            document.getElementById('totalStops').textContent = route.totalStations;
+            document.getElementById('totalTransfers').textContent = route.transfers;
+            
+            // Update fares
+            document.getElementById('cashlessFare').textContent = `RM ${route.fare.cashless.toFixed(2)}`;
+            document.getElementById('cashFare').textContent = `RM ${route.fare.cash.toFixed(2)}`;
+            
+            const savings = (route.fare.cash - route.fare.cashless).toFixed(2);
+            document.getElementById('savingsBadge').textContent = `Save RM ${savings}`;
+            
+            // Build route segments
+            const segmentsContainer = document.getElementById('routeSegments');
+            segmentsContainer.innerHTML = '';
+            
+            route.segments.forEach((segment, index) => {
+                const lineClass = segment.line.lineId.replace(/\s+/g, '-');
+                
+                // Starting station
+                const startHtml = `
+                    <div class="segment">
+                        <div class="segment-line">
+                            <div class="line-dot dot-${lineClass}"></div>
+                            <div class="line-connector connector-${lineClass}"></div>
+                        </div>
+                        <div class="segment-info">
+                            <div class="segment-station">${segment.from}</div>
                             <div class="segment-details">
-                                <div><strong>From:</strong> ${seg.from}</div>
-                                <div><strong>To:</strong> ${seg.to}</div>
-                                <div><strong>Stops:</strong> ${seg.stops} stations</div>
-                                <div><strong>Duration:</strong> ~${seg.duration} mins</div>
-                                <div><strong>Operating Hours:</strong> ${seg.hours}</div>
+                                <span class="line-badge line-${lineClass}">${segment.line.lineCode}</span>
+                                Board ${segment.line.lineName}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                segmentsContainer.innerHTML += startHtml;
+                
+                // Transfer indicator (if not last segment)
+                if (index < route.segments.length - 1) {
+                    const transferHtml = `
+                        <div class="segment">
+                            <div class="segment-line">
+                                <div class="line-dot dot-${lineClass}"></div>
+                            </div>
+                            <div class="segment-info">
+                                <div class="segment-station">${segment.to}</div>
+                                <div class="transfer-badge">
+                                    🔄 Transfer to ${route.segments[index + 1].line.lineName}
+                                </div>
+                                <div class="segment-details">
+                                    ${segment.stations} stops • ${segment.duration} min
+                                </div>
                             </div>
                         </div>
                     `;
-                } else {
-                    return `
-                        <div class="segment" style="border-left-color: #FFD700">
-                            <div class="segment-header">
-                                <div class="segment-icon" style="background: #FFD70020; color: #FFD700">🚶</div>
-                                <div class="segment-title">Transfer at ${seg.station}</div>
-                            </div>
-                            <div class="segment-details">
-                                <div>Follow signs to connecting line</div>
-                                <div><strong>Transfer time:</strong> ~${seg.duration} mins</div>
-                            </div>
-                        </div>
-                    `;
+                    segmentsContainer.innerHTML += transferHtml;
                 }
-            }).join('');
+            });
             
-            result.innerHTML = `
-                <div class="route-result">
-                    ${warningHTML}
-                    <div class="route-header">
-                        <div class="route-title">${route.from} → ${route.to}</div>
-                        <div class="journey-time">~${route.duration} mins</div>
+            // Final destination
+            const lastSegment = route.segments[route.segments.length - 1];
+            const lastLineClass = lastSegment.line.lineId.replace(/\s+/g, '-');
+            const endHtml = `
+                <div class="segment">
+                    <div class="segment-line">
+                        <div class="line-dot dot-${lastLineClass}" style="background: var(--${lastLineClass.replace('line-', '')}, #333); border-color: var(--${lastLineClass.replace('line-', '')}, #333);"></div>
                     </div>
-                    <div class="route-info">
-                        <div class="info-card"><div class="info-label">Fare</div><div class="info-value">RM ${route.fare.toFixed(2)}</div></div>
-                        <div class="info-card"><div class="info-label">Transfers</div><div class="info-value">${route.transfers}</div></div>
-                        <div class="info-card"><div class="info-label">Type</div><div class="info-value">${route.transfers ? 'Transfer' : 'Direct'}</div></div>
-                    </div>
-                    ${segmentsHTML}
-                    <div class="tip-box">
-                        <strong>💡 Travel Tips:</strong><br>
-                        • Use Touch 'n Go card or e-wallet for faster boarding<br>
-                        • Peak hours: Mon-Fri 7-9 AM, 5-7 PM<br>
-                        • Keep right on escalators for others to pass
+                    <div class="segment-info">
+                        <div class="segment-station">${lastSegment.to}</div>
+                        <div class="segment-details">
+                            🎯 Destination • ${lastSegment.stations} stops • ${lastSegment.duration} min
+                        </div>
                     </div>
                 </div>
             `;
+            segmentsContainer.innerHTML += endHtml;
             
-            result.classList.remove('hidden');
+            // Show results
+            resultsSection.classList.add('active');
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Initialize when page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeStations);
     </script>
 </body>
 </html>
